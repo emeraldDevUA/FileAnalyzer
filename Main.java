@@ -4,28 +4,31 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     String path = "";
     static HashMap<String, Integer> fileSizeMap = new HashMap<>();
+
     static String[] formats = {".java",".c",".cpp",".glsl",".py", ".js"};
     static gfxVessel vessel = new gfxVessel();
 
-    public static void main(String[] args) throws FileNotFoundException {
-         File folder=null;
+    public static void main(String[] args)  {
+        File folder=null;
         JFileChooser jFileChooser = new JFileChooser();
-        jFileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-        jFileChooser.showOpenDialog(vessel);
-        File f = jFileChooser.getSelectedFile();
+        try {
 
 
-        listFilesForFolder(f);
-        printMap();
+            jFileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+            jFileChooser.showOpenDialog(vessel);
+            File f = jFileChooser.getSelectedFile();
 
+
+            listFilesForFolder(f);
+            printMap();
+        }catch (FileNotFoundException e){
+            JOptionPane.showMessageDialog(vessel,"IncorrectPath");
+        }
     }
 
     public static void listFilesForFolder(File folder) throws FileNotFoundException {
@@ -57,14 +60,16 @@ public class Main {
     public static void printMap(){
         int total = 0;
         int files = 0;
-        Iterator<String> iterator = fileSizeMap.keySet().iterator();
+
+        Iterator<String> iterator = (fileSizeMap.keySet()).iterator();
+
         int tmp;
         Iterator<Integer> iterator1 = fileSizeMap.values().iterator();
         StringBuilder sb = new StringBuilder();
         while (iterator.hasNext()){
             files++;
 
-            String str = String.format("%20s\t%4d\n",iterator.next(),(tmp = iterator1.next()));
+            String str = String.format("%4d\t |%s\n",(tmp = iterator1.next()),iterator.next());
             sb.append(str);
             System.out.print(str);
 
@@ -72,7 +77,7 @@ public class Main {
         }
 
         System.out.println("---------------------");
-        System.out.println(files+ ((files!=1)?" Files":" File")+ ",\t" + total +" Lines of code");
+        System.out.println(files+ ((files!=1)?"\tFiles":" File")+ ",\t" + total +" Lines of code");
         sb.append(files).append((files != 1) ? " Files" : " File").append(",\t").append(total).append(" Lines of code");
 
         vessel.setText(sb.toString());
@@ -80,7 +85,7 @@ public class Main {
 
 
     private static final class gfxVessel extends JFrame{
-        JTextArea tf;
+        private final JTextArea tf;
         public gfxVessel(){
             ScrollPane scrollPane = new ScrollPane();
 
@@ -89,14 +94,14 @@ public class Main {
             JTextArea textField = new JTextArea();
             tf = textField;
             textField.setFont(new Font("Bahnscrift",Font.BOLD, 14));
-
+            tf.setSelectionColor(new Color(66, 135, 245));
             tf.setBounds(0,0,640,480);
             scrollPane.add(textField);
             add(scrollPane);
             setVisible(true);
 
-
-
+            setTitle("FileAnalyzer");
+            setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
 
         }
@@ -113,5 +118,4 @@ public class Main {
 
 
 }
-
 
